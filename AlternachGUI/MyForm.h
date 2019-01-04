@@ -230,6 +230,7 @@ namespace AlternachGUI {
 			this->MinimizeBox = false;
 			this->Name = L"MyForm";
 			this->Text = L"Reverse Game of Life";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MyForm::MyForm_FormClosing);
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView2))->EndInit();
@@ -310,16 +311,12 @@ namespace AlternachGUI {
 	}
 
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
-		int num_of_fields = Get_NUM_OF_FIELDS();
-		int*** fields = Get_FIELDS();
-		for (int i = 0; i < num_of_fields; i++)
-			FreeField(fields[i], this->dataGridView1->RowCount);
-		free(fields);
+		FreeFIELDS(this->dataGridView1->RowCount);
 		Set_NUM_OF_FIELDS(0);
 		Set_FIELDS(nullptr);
 		int** field = GetInputField();
 		FindAllFields(field, this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
-		fields = Get_FIELDS();
+		int*** fields = Get_FIELDS();
 		this->numericUpDown3->Minimum = 1;
 		this->numericUpDown3->Maximum = Get_NUM_OF_FIELDS();
 		this->label4->Text = "of " + System::Convert::ToString(Get_NUM_OF_FIELDS());
@@ -335,5 +332,9 @@ namespace AlternachGUI {
 		FreeField(reformField, this->dataGridView1->RowCount);
 	}
 
-	};
+	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+		FreeFIELDS(this->dataGridView1->RowCount);
+		FreePatterns();
+	}
+};
 }

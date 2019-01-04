@@ -14,7 +14,7 @@ int NUM_OF_PATTERNS1; // Количество паттернов, создающих жизнь в центре
 int*** FIELDS; // Искомые поля
 int NUM_OF_FIELDS; // Количество искомых полей
 
-// Освобождение памяти из под полей
+// Освобождение памяти из под поля
 int** FreeField(int** field, int m) {
 	for (int i = 0; i < m; i++)
 		free(field[i]);
@@ -25,6 +25,13 @@ int** FreeField(int** field, int m) {
 void FreePatterns() {
 	free(PATTERNS0);
 	free(PATTERNS1);
+}
+// Освобождение памяти из под полей
+void FreeFIELDS(int m) {
+	for (int i = 0; i < NUM_OF_FIELDS; i++)
+		FreeField(FIELDS[i], m);
+	free(FIELDS);
+	FIELDS = nullptr;
 }
 // Нахождение всех паттернов, создающих и не создающих жизнь
 void FindAllPatterns() {

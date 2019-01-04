@@ -6,8 +6,9 @@
 
 enum dir { UP, LEFT, DOWN, RIGHT }; // Направления сдвига паттернов
 
-int** FreeField(int**, int); // Освобождение памяти из под полей
+int** FreeField(int**, int); // Освобождение памяти из под поля
 void FreePatterns(); // Освобождание памяти из под паттернов
+void FreeFIELDS(int); // Освобождение памяти из под полей
 void FindAllPatterns(); // Нахождение всех паттернов, создающих и не создающих жизнь
 int MovePattern(int, dir); // Сдвиг паттерна
 bool MatchCheck(int, int); // Проверка на наличие совпадений в двух паттернах
