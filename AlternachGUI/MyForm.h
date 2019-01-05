@@ -318,6 +318,7 @@ namespace AlternachGUI {
 		this->numericUpDown3->Minimum = 0;
 		this->numericUpDown3->Value = 0;
 		this->numericUpDown3->Maximum = 0;
+		this->label4->Text = "of 0";
 		ResizeGrid(Decimal::ToInt32(this->numericUpDown1->Value), Decimal::ToInt32(this->numericUpDown2->Value));
 	}
 
