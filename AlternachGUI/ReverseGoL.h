@@ -20,7 +20,3 @@ int** CopyField(int**, int, int); // Создание копии поля
 bool BoundaryCheck(int**, int, int, int, int); // Проверка паттернов, находящихся на границе поля (паттерны на границе не должны создавать жизнь за предалами поля)
 void FindAllFields(int**, int, int); // Нахождение полей, предшествующих исходному полю
 int** ReformField(int**, int, int); // Составление из поля паттернов преобразованного поля
-void Set_FIELDS(int***);
-void Set_NUM_OF_FIELDS(int);
-int*** Get_FIELDS();
-int Get_NUM_OF_FIELDS();

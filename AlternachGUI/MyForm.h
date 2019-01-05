@@ -2,6 +2,9 @@
 #include <iostream>
 #include "ReverseGoL.h"
 
+int*** FIELDS; // Искомые поля
+int NUM_OF_FIELDS; // Количество искомых полей
+
 namespace AlternachGUI {
 
 	using namespace System;
@@ -61,6 +64,7 @@ namespace AlternachGUI {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
 			this->dataGridView2 = (gcnew System::Windows::Forms::DataGridView());
 			this->label1 = (gcnew System::Windows::Forms::Label());
@@ -140,7 +144,7 @@ namespace AlternachGUI {
 				static_cast<System::Byte>(204)));
 			this->button2->Location = System::Drawing::Point(330, 350);
 			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(145, 25);
+			this->button2->Size = System::Drawing::Size(110, 25);
 			this->button2->TabIndex = 3;
 			this->button2->Text = L"Get result";
 			this->button2->UseVisualStyleBackColor = true;
@@ -194,17 +198,18 @@ namespace AlternachGUI {
 			// 
 			this->numericUpDown3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->numericUpDown3->Location = System::Drawing::Point(481, 351);
+			this->numericUpDown3->Location = System::Drawing::Point(445, 351);
+			this->numericUpDown3->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 0, 0, 0, 0 });
 			this->numericUpDown3->Name = L"numericUpDown3";
-			this->numericUpDown3->Size = System::Drawing::Size(65, 24);
+			this->numericUpDown3->Size = System::Drawing::Size(95, 24);
 			this->numericUpDown3->TabIndex = 6;
 			this->numericUpDown3->ValueChanged += gcnew System::EventHandler(this, &MyForm::numericUpDown3_ValueChanged);
 			// 
 			// label4
 			// 
-			this->label4->Location = System::Drawing::Point(552, 350);
+			this->label4->Location = System::Drawing::Point(545, 350);
 			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(78, 25);
+			this->label4->Size = System::Drawing::Size(85, 25);
 			this->label4->TabIndex = 7;
 			this->label4->Text = L"of 0";
 			this->label4->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
@@ -226,6 +231,7 @@ namespace AlternachGUI {
 			this->Controls->Add(this->dataGridView2);
 			this->Controls->Add(this->dataGridView1);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"MyForm";
@@ -297,8 +303,8 @@ namespace AlternachGUI {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		ResizeGrid(3, 3);
 		FindAllPatterns();
-		Set_NUM_OF_FIELDS(0);
-		Set_FIELDS(nullptr);
+		NUM_OF_FIELDS = 0;
+		FIELDS = nullptr;
 	}
 
 	private: System::Void dataGridView1_CellClick(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
@@ -307,29 +313,32 @@ namespace AlternachGUI {
 	}
 
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+		FreeFIELDS(this->dataGridView1->RowCount);
+		this->dataGridView2->Rows->Clear();
+		this->numericUpDown3->Minimum = 0;
+		this->numericUpDown3->Value = 0;
+		this->numericUpDown3->Maximum = 0;
 		ResizeGrid(Decimal::ToInt32(this->numericUpDown1->Value), Decimal::ToInt32(this->numericUpDown2->Value));
 	}
 
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
 		FreeFIELDS(this->dataGridView1->RowCount);
-		Set_NUM_OF_FIELDS(0);
-		Set_FIELDS(nullptr);
 		int** field = GetInputField();
 		FindAllFields(field, this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
-		int*** fields = Get_FIELDS();
 		this->numericUpDown3->Minimum = 1;
-		this->numericUpDown3->Maximum = Get_NUM_OF_FIELDS();
-		this->label4->Text = "of " + System::Convert::ToString(Get_NUM_OF_FIELDS());
-		int** reformField = ReformField(fields[0], this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
+		this->numericUpDown3->Maximum = NUM_OF_FIELDS;
+		this->label4->Text = "of " + System::Convert::ToString(NUM_OF_FIELDS);
+		int** reformField = ReformField(FIELDS[0], this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
 		SetGrid(this->dataGridView2, reformField, this->dataGridView1->RowCount + 2, this->dataGridView1->ColumnCount + 2);
 		FreeField(reformField, this->dataGridView1->RowCount);
 	}
 
 	private: System::Void numericUpDown3_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
-		int*** fields = Get_FIELDS();
-		int** reformField = ReformField(fields[Decimal::ToInt32(this->numericUpDown3->Value) - 1], this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
-		SetGrid(this->dataGridView2, reformField, this->dataGridView1->RowCount + 2, this->dataGridView1->ColumnCount + 2);
-		FreeField(reformField, this->dataGridView1->RowCount);
+		if (this->numericUpDown3->Value != 0) {
+			int** reformField = ReformField(FIELDS[Decimal::ToInt32(this->numericUpDown3->Value) - 1], this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
+			SetGrid(this->dataGridView2, reformField, this->dataGridView1->RowCount + 2, this->dataGridView1->ColumnCount + 2);
+			FreeField(reformField, this->dataGridView1->RowCount);
+		}
 	}
 
 	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {

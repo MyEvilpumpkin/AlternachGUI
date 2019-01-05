@@ -1,18 +1,26 @@
 #include <iostream>
-//#include <thread>
-//#include <mutex>
+#include <thread>
+#include <windows.h>
 #include "ReverseGoL.h"
+
+class srwlock {
+	SRWLOCK _lk {};
+public:
+	void lock() { AcquireSRWLockExclusive(&_lk); }
+	void unlock() { ReleaseSRWLockExclusive(&_lk); }
+	srwlock() = default;
+};
 
 using namespace std;
 
-//mutex mtx;
+srwlock mtx;
 
 int* PATTERNS0; // Паттерны не создающие жизнь в центе
 int NUM_OF_PATTERNS0; // Количество паттернов, не создающих жизнь в центе
 int* PATTERNS1; // Паттерны создающие жизнь в центре
 int NUM_OF_PATTERNS1; // Количество паттернов, создающих жизнь в центре
-int*** FIELDS; // Искомые поля
-int NUM_OF_FIELDS; // Количество искомых полей
+extern int*** FIELDS; // Искомые поля
+extern int NUM_OF_FIELDS; // Количество искомых полей
 
 // Освобождение памяти из под поля
 int** FreeField(int** field, int m) {
@@ -32,6 +40,7 @@ void FreeFIELDS(int m) {
 		FreeField(FIELDS[i], m);
 	free(FIELDS);
 	FIELDS = nullptr;
+	NUM_OF_FIELDS = 0;
 }
 // Нахождение всех паттернов, создающих и не создающих жизнь
 void FindAllPatterns() {
@@ -344,34 +353,32 @@ void FindAllFields(int** field, int m, int n) {
 				if (!i) {
 					if (!j) {
 						if (field[i][j] + 2) {
-							//thread th1[140];
+							thread th1[140];
 							int** newFields[140];
 							for (int k = 0; k < NUM_OF_PATTERNS1; k++) {
 								newFields[k] = CopyField(field, m, n);
 								newFields[k][i][j] = PATTERNS1[k];
 								if (BoundaryCheck(newFields[k], m, n, i, j))
-									//th1[k] = thread(FindAllFields, newFields[k], m, n);
-									FindAllFields(newFields[k], m, n);
+									th1[k] = thread(FindAllFields, newFields[k], m, n);
 							}
 							for (int k = 0; k < NUM_OF_PATTERNS1; k++) {
-								//if (th1[k].joinable())
-									//th1[k].join();
+								if (th1[k].joinable())
+									th1[k].join();
 								FreeField(newFields[k], m);
 							}
 						}
 						else {
-							//thread th0[372];
+							thread th0[372];
 							int** newFields[372];
 							for (int k = 0; k < NUM_OF_PATTERNS0; k++) {
 								newFields[k] = CopyField(field, m, n);
 								newFields[k][i][j] = PATTERNS0[k];
 								if (BoundaryCheck(newFields[k], m, n, i, j))
-									//th0[k] = thread(FindAllFields, newFields[k], m, n);
-									FindAllFields(newFields[k], m, n);
+									th0[k] = thread(FindAllFields, newFields[k], m, n);
 							}
 							for (int k = 0; k < NUM_OF_PATTERNS0; k++) {
-								//if (th0[k].joinable())
-									//th0[k].join();
+								if (th0[k].joinable())
+									th0[k].join();
 								FreeField(newFields[k], m);
 							}
 						}
@@ -420,10 +427,10 @@ void FindAllFields(int** field, int m, int n) {
 		}
 	}
 	if (complete) {
-		//mtx.lock();
+		mtx.lock();
 		FIELDS = (int***)realloc(FIELDS, (NUM_OF_FIELDS + 1) * sizeof(int**));
 		FIELDS[NUM_OF_FIELDS++] = CopyField(field, m, n);
-		//mtx.unlock();
+		mtx.unlock();
 	}
 }
 // Составление из поля паттернов преобразованного поля
@@ -472,20 +479,4 @@ int** ReformField(int** field, int m, int n) {
 				}
 			}
 	return newField;
-}
-
-void Set_FIELDS(int*** fields) {
-	FIELDS = fields;
-}
-
-void Set_NUM_OF_FIELDS(int num) {
-	NUM_OF_FIELDS = num;
-}
-
-int*** Get_FIELDS() {
-	return FIELDS;
-}
-
-int Get_NUM_OF_FIELDS() {
-	return NUM_OF_FIELDS;
 }
