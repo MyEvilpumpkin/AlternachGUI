@@ -496,11 +496,11 @@ namespace AlternachGUI {
 						for (int j = 1; j < 8; j++) {
 							if (j == 1)
 								sw->Write("(" + CNF1[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-							if (j > 1 && j < 6)
+							if (j > 1 && j <= 6)
 								sw->Write("(流<sub>" + (Ycounter - 1)  + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
 							if (j == 7)
 								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF1[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
-							if (j < 6)
+							if (j <= 6)
 								Ycounter++;
 						}
 					}
@@ -509,11 +509,11 @@ namespace AlternachGUI {
 						for (int j = 1; j < 8; j++) {
 							if (j == 1)
 								sw->Write("(" + CNF0[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-							if (j > 1 && j < 6)
+							if (j > 1 && j <= 6)
 								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
 							if (j == 7)
 								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF0[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
-							if (j < 6)
+							if (j <= 6)
 								Ycounter++;
 						}
 					}
