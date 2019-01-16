@@ -252,6 +252,7 @@ namespace AlternachGUI {
 			this->listBox1->Name = L"listBox1";
 			this->listBox1->Size = System::Drawing::Size(193, 26);
 			this->listBox1->TabIndex = 9;
+			this->listBox1->Leave += gcnew System::EventHandler(this, &MyForm::listBox1_Leave);
 			this->listBox1->MouseDoubleClick += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::listBox1_MouseDoubleClick);
 			// 
 			// MyForm
@@ -589,6 +590,11 @@ namespace AlternachGUI {
 			CreateHTML3CNF();
 		MyForm1^ f1 = gcnew MyForm1();
 		f1->Show();
+		this->listBox1->ClearSelected();
+	}
+
+	private: System::Void listBox1_Leave(System::Object^  sender, System::EventArgs^  e) {
+		this->listBox1->ClearSelected();
 	}
 };
 }
