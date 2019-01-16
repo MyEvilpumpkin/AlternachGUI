@@ -57,7 +57,14 @@ namespace AlternachGUI {
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::NumericUpDown^  numericUpDown3;
 	private: System::Windows::Forms::Label^  label4;
-	private: System::Windows::Forms::Button^  button3;
+
+	private: System::Windows::Forms::ListBox^  listBox1;
+
+
+
+
+
+
 
 	private:
 		/// <summary>
@@ -84,7 +91,7 @@ namespace AlternachGUI {
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->numericUpDown3 = (gcnew System::Windows::Forms::NumericUpDown());
 			this->label4 = (gcnew System::Windows::Forms::Label());
-			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView2))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUpDown1))->BeginInit();
@@ -234,24 +241,25 @@ namespace AlternachGUI {
 			this->label4->Text = L"of 0";
 			this->label4->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
 			// 
-			// button3
+			// listBox1
 			// 
-			this->button3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->listBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->button3->Location = System::Drawing::Point(220, 12);
-			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(193, 30);
-			this->button3->TabIndex = 8;
-			this->button3->Text = L"View SBE";
-			this->button3->UseVisualStyleBackColor = true;
-			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
+			this->listBox1->FormattingEnabled = true;
+			this->listBox1->ItemHeight = 22;
+			this->listBox1->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"View DNF", L"View CNF", L"View 3-CNF" });
+			this->listBox1->Location = System::Drawing::Point(220, 12);
+			this->listBox1->Name = L"listBox1";
+			this->listBox1->Size = System::Drawing::Size(193, 26);
+			this->listBox1->TabIndex = 9;
+			this->listBox1->MouseDoubleClick += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::listBox1_MouseDoubleClick);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(852, 475);
-			this->Controls->Add(this->button3);
+			this->Controls->Add(this->listBox1);
 			this->Controls->Add(this->label4);
 			this->Controls->Add(this->numericUpDown3);
 			this->Controls->Add(this->label3);
@@ -334,42 +342,77 @@ namespace AlternachGUI {
 		return field;
 	}
 
-	array<array<String^>^>^ BLANK0;
-	array<array<String^>^>^ BLANK1;
+	array<array<String^>^>^ DNF0;
+	array<array<String^>^>^ DNF1;
 
-	private: void CreateBLANKS() {
-		BLANK0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
+	private: void CreateDNF() {
+		DNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
 		for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
-			BLANK0[i] = gcnew array<String^>(9);
+			DNF0[i] = gcnew array<String^>(9);
 			for (int j = 1; j <= 9; j++) {
 				if (MatchCheck(j, PATTERNS0[i].pattern))
-					BLANK0[i][j-1] = "x";
+					DNF0[i][j-1] = "x";
 				else
-					BLANK0[i][j-1] = "洪";
+					DNF0[i][j-1] = "洪";
 			}
 		}
-		BLANK1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
+		DNF1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
 		for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
-			BLANK1[i] = gcnew array<String^>(9);
+			DNF1[i] = gcnew array<String^>(9);
 			for (int j = 1; j <= 9; j++) {
 				if (MatchCheck(j, PATTERNS1[i].pattern))
-					BLANK1[i][j - 1] = "x";
+					DNF1[i][j - 1] = "x";
 				else
-					BLANK1[i][j - 1] = "洪";
+					DNF1[i][j - 1] = "洪";
 			}
 		}
 	}
 
-	private: void DeleteBLANKS() {
+	private: void DeleteDNF() {
 		for (int i = 0; i < NUM_OF_PATTERNS0; i++)
-			delete[] BLANK0[i];
-		delete[] BLANK0;
+			delete[] DNF0[i];
+		delete[] DNF0;
 		for (int i = 0; i < NUM_OF_PATTERNS1; i++)
-			delete[] BLANK1[i];
-		delete[] BLANK1;
+			delete[] DNF1[i];
+		delete[] DNF1;
 	}
 
-	private: void CreateHTML() {
+	 array<array<String^>^>^ CNF0;
+	 array<array<String^>^>^ CNF1;
+
+	private: void CreateCNF() {
+		CNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
+		for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
+			CNF0[i] = gcnew array<String^>(9);
+			for (int j = 1; j <= 9; j++) {
+				if (MatchCheck(j, PATTERNS1[i].pattern))
+					CNF0[i][j - 1] = "洪";
+				else
+					CNF0[i][j - 1] = "x";
+			}
+		}
+		CNF1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
+		for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
+			CNF1[i] = gcnew array<String^>(9);
+			for (int j = 1; j <= 9; j++) {
+				if (MatchCheck(j, PATTERNS0[i].pattern))
+					CNF1[i][j - 1] = "洪";
+				else
+					CNF1[i][j - 1] = "x";
+			}
+		}
+	}
+
+	private: void DeleteCNF() {
+		for (int i = 0; i < NUM_OF_PATTERNS1; i++)
+			delete[] CNF0[i];
+		delete[] CNF0;
+		for (int i = 0; i < NUM_OF_PATTERNS0; i++)
+			delete[] CNF1[i];
+		delete[] CNF1;
+	}
+
+	private: void CreateHTMLDNF() {
 		int** field = GetInputField();
 		StreamWriter^ sw = gcnew StreamWriter("SBE.html");
 		sw->Write("<html><meta charset=\"utf-8\"><h1>System of Boolean Equations</h1><br><p style = \"word-wrap: break-word\"><em>");
@@ -382,7 +425,7 @@ namespace AlternachGUI {
 					for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
 						sw->Write("(");
 						for (int j = 0; j < 9; j++)
-							sw->Write(BLANK1[i][j] + "<sub>" + nums[j] + "</sub>");
+							sw->Write(DNF1[i][j] + "<sub>" + nums[j] + "</sub>");
 						sw->Write(")");
 						if (i != NUM_OF_PATTERNS1 - 1)
 							sw->Write("V");
@@ -391,10 +434,87 @@ namespace AlternachGUI {
 					for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
 						sw->Write("(");
 						for (int j = 0; j < 9; j++)
-							sw->Write(BLANK0[i][j] + "<sub>" + nums[j] + "</sub>");
+							sw->Write(DNF0[i][j] + "<sub>" + nums[j] + "</sub>");
 						sw->Write(")");
 						if (i != NUM_OF_PATTERNS0 - 1)
 							sw->Write("V");
+					}
+			}
+		}
+		sw->Write("</em></p></html>");
+		sw->Close();
+	}
+
+	private: void CreateHTMLCNF() {
+		int** field = GetInputField();
+		StreamWriter^ sw = gcnew StreamWriter("SBE.html");
+		sw->Write("<html><meta charset=\"utf-8\"><h1>System of Boolean Equations</h1><br><p style = \"word-wrap: break-word\"><em>");
+		int maxM = this->dataGridView1->RowCount;
+		int maxN = this->dataGridView1->ColumnCount;
+		for (int m = 0; m < maxM; m++) {
+			for (int n = 0; n < maxN; n++) {
+				int nums[9] = { m*(maxN + 2) + n + 1, m*(maxN + 2) + n + 2, m*(maxN + 2) + n + 3, m*(maxN + 2) + n + 1 + (maxN + 2), m*(maxN + 2) + n + 2 + (maxN + 2), m*(maxN + 2) + n + 3 + (maxN + 2), m*(maxN + 2) + n + 1 + (maxN + 2) * 2, m*(maxN + 2) + n + 2 + (maxN + 2) * 2, m*(maxN + 2) + n + 3 + (maxN + 2) * 2 };
+				if (field[m][n] + 2)
+					for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
+						sw->Write("(");
+						for (int j = 0; j < 9; j++) {
+							sw->Write(CNF1[i][j] + "<sub>" + nums[j] + "</sub>");
+							if (j != 8)
+								sw->Write("V");
+						}
+						sw->Write(")");
+					}
+				else
+					for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
+						sw->Write("(");
+						for (int j = 0; j < 9; j++) {
+							sw->Write(CNF0[i][j] + "<sub>" + nums[j] + "</sub>");
+							if (j != 8)
+								sw->Write("V");
+						}
+						sw->Write(")");
+					}
+			}
+		}
+		sw->Write("</em></p></html>");
+		sw->Close();
+	}
+
+	private: void CreateHTML3CNF() {
+		int** field = GetInputField();
+		int Ycounter = 1;
+		StreamWriter^ sw = gcnew StreamWriter("SBE.html");
+		sw->Write("<html><meta charset=\"utf-8\"><h1>System of Boolean Equations</h1><br><p style = \"word-wrap: break-word\"><em>");
+		int maxM = this->dataGridView1->RowCount;
+		int maxN = this->dataGridView1->ColumnCount;
+		for (int m = 0; m < maxM; m++) {
+			for (int n = 0; n < maxN; n++) {
+				int nums[9] = { m*(maxN + 2) + n + 1, m*(maxN + 2) + n + 2, m*(maxN + 2) + n + 3, m*(maxN + 2) + n + 1 + (maxN + 2), m*(maxN + 2) + n + 2 + (maxN + 2), m*(maxN + 2) + n + 3 + (maxN + 2), m*(maxN + 2) + n + 1 + (maxN + 2) * 2, m*(maxN + 2) + n + 2 + (maxN + 2) * 2, m*(maxN + 2) + n + 3 + (maxN + 2) * 2 };
+				if (field[m][n] + 2)
+					for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
+						for (int j = 1; j < 8; j++) {
+							if (j == 1)
+								sw->Write("(" + CNF1[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
+							if (j > 1 && j < 6)
+								sw->Write("(流<sub>" + (Ycounter - 1)  + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
+							if (j == 7)
+								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF1[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
+							if (j < 6)
+								Ycounter++;
+						}
+					}
+				else
+					for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
+						for (int j = 1; j < 8; j++) {
+							if (j == 1)
+								sw->Write("(" + CNF0[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
+							if (j > 1 && j < 6)
+								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
+							if (j == 7)
+								sw->Write("(流<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF0[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
+							if (j < 6)
+								Ycounter++;
+						}
 					}
 			}
 		}
@@ -411,7 +531,8 @@ namespace AlternachGUI {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		ResizeGrid(3, 3);
 		FindAllPatterns();
-		CreateBLANKS();
+		CreateDNF();
+		CreateCNF();
 		DeleteHTML();
 		NUM_OF_FIELDS = 0;
 		FIELDS = nullptr;
@@ -453,13 +574,19 @@ namespace AlternachGUI {
 	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
 		DeleteHTML();
 		FreeFIELDS(this->dataGridView1->RowCount);
-		DeleteBLANKS();
+		DeleteDNF();
+		DeleteCNF();
 		FreePatterns();
 	}
 
-	private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void listBox1_MouseDoubleClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		DeleteHTML();
-		CreateHTML();
+		if (this->listBox1->SelectedItem == "View DNF")
+			CreateHTMLDNF();
+		else if (this->listBox1->SelectedItem == "View CNF")
+			CreateHTMLCNF();
+		else
+			CreateHTML3CNF();
 		MyForm1^ f1 = gcnew MyForm1();
 		f1->Show();
 	}
