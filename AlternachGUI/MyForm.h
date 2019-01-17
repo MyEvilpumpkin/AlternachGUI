@@ -12,7 +12,7 @@ int NUM_OF_FIELDS; // Êîëè÷åñòâî èñêîìûõ ïîëåé
 
 namespace AlternachGUI {
 
-
+	
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -115,6 +115,7 @@ namespace AlternachGUI {
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::None;
 			this->dataGridView1->Size = System::Drawing::Size(400, 369);
 			this->dataGridView1->TabIndex = 0;
+			this->dataGridView1->TabStop = false;
 			this->dataGridView1->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellClick);
 			// 
 			// dataGridView2
@@ -133,6 +134,7 @@ namespace AlternachGUI {
 			this->dataGridView2->ScrollBars = System::Windows::Forms::ScrollBars::None;
 			this->dataGridView2->Size = System::Drawing::Size(400, 369);
 			this->dataGridView2->TabIndex = 0;
+			this->dataGridView2->TabStop = false;
 			// 
 			// label1
 			// 
@@ -290,7 +292,7 @@ namespace AlternachGUI {
 
 		}
 #pragma endregion
-		
+
 	private: void SetGrid(System::Windows::Forms::DataGridView^ grid, int** field, int m, int n) {
 		grid->Rows->Clear();
 		grid->ColumnCount = n;
@@ -343,8 +345,8 @@ namespace AlternachGUI {
 		return field;
 	}
 
-	array<array<String^>^>^ DNF0;
-	array<array<String^>^>^ DNF1;
+			 array<array<String^>^>^ DNF0;
+			 array<array<String^>^>^ DNF1;
 
 	private: void CreateDNF() {
 		DNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
@@ -352,9 +354,9 @@ namespace AlternachGUI {
 			DNF0[i] = gcnew array<String^>(9);
 			for (int j = 1; j <= 9; j++) {
 				if (MatchCheck(j, PATTERNS0[i].pattern))
-					DNF0[i][j-1] = "x";
+					DNF0[i][j - 1] = "x";
 				else
-					DNF0[i][j-1] = "¬x";
+					DNF0[i][j - 1] = "¬x";
 			}
 		}
 		DNF1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
@@ -378,8 +380,8 @@ namespace AlternachGUI {
 		delete[] DNF1;
 	}
 
-	 array<array<String^>^>^ CNF0;
-	 array<array<String^>^>^ CNF1;
+			 array<array<String^>^>^ CNF0;
+			 array<array<String^>^>^ CNF1;
 
 	private: void CreateCNF() {
 		CNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
@@ -421,7 +423,7 @@ namespace AlternachGUI {
 		int maxN = this->dataGridView1->ColumnCount;
 		for (int m = 0; m < maxM; m++) {
 			for (int n = 0; n < maxN; n++) {
-				int nums[9] = {m*(maxN + 2) + n + 1, m*(maxN + 2) + n + 2, m*(maxN + 2) + n + 3, m*(maxN + 2) + n + 1 + (maxN + 2), m*(maxN + 2) + n + 2 + (maxN + 2), m*(maxN + 2) + n + 3 + (maxN + 2), m*(maxN + 2) + n + 1 + (maxN + 2)*2, m*(maxN + 2) + n + 2 + (maxN + 2)*2, m*(maxN + 2) + n + 3 + (maxN + 2)*2};
+				int nums[9] = { m*(maxN + 2) + n + 1, m*(maxN + 2) + n + 2, m*(maxN + 2) + n + 3, m*(maxN + 2) + n + 1 + (maxN + 2), m*(maxN + 2) + n + 2 + (maxN + 2), m*(maxN + 2) + n + 3 + (maxN + 2), m*(maxN + 2) + n + 1 + (maxN + 2) * 2, m*(maxN + 2) + n + 2 + (maxN + 2) * 2, m*(maxN + 2) + n + 3 + (maxN + 2) * 2 };
 				if (field[m][n] + 2)
 					for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
 						sw->Write("(");
@@ -444,6 +446,7 @@ namespace AlternachGUI {
 		}
 		sw->Write("</em></p></html>");
 		sw->Close();
+		FreeField(field, this->dataGridView1->RowCount);
 	}
 
 	private: void CreateHTMLCNF() {
@@ -479,6 +482,7 @@ namespace AlternachGUI {
 		}
 		sw->Write("</em></p></html>");
 		sw->Close();
+		FreeField(field, this->dataGridView1->RowCount);
 	}
 
 	private: void CreateHTML3CNF() {
@@ -497,7 +501,7 @@ namespace AlternachGUI {
 							if (j == 1)
 								sw->Write("(" + CNF1[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
 							if (j > 1 && j <= 6)
-								sw->Write("(¬y<sub>" + (Ycounter - 1)  + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
+								sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
 							if (j == 7)
 								sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF1[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
 							if (j <= 6)
@@ -521,6 +525,7 @@ namespace AlternachGUI {
 		}
 		sw->Write("</em></p></html>");
 		sw->Close();
+		FreeField(field, this->dataGridView1->RowCount);
 	}
 
 	private: void DeleteHTML() {
@@ -555,13 +560,22 @@ namespace AlternachGUI {
 	}
 
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+		this->label4->Visible = false;
 		FreeFIELDS(this->dataGridView1->RowCount);
 		int** field = GetInputField();
 		FindAllFields(field, this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
-		this->numericUpDown3->Minimum = 1;
+		FreeField(field, this->dataGridView1->RowCount);
+		if (NUM_OF_FIELDS) {
+			this->numericUpDown3->Minimum = 1;
+			this->numericUpDown3->Value = 1;
+		}
+		else {
+			this->numericUpDown3->Minimum = 0;
+			this->numericUpDown3->Value = 0;
+		}
 		this->numericUpDown3->Maximum = NUM_OF_FIELDS;
 		this->label4->Text = "of " + System::Convert::ToString(NUM_OF_FIELDS);
-		this->numericUpDown3->Value = 1;
+		this->label4->Visible = true;
 	}
 
 	private: System::Void numericUpDown3_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -596,5 +610,5 @@ namespace AlternachGUI {
 	private: System::Void listBox1_Leave(System::Object^  sender, System::EventArgs^  e) {
 		this->listBox1->ClearSelected();
 	}
-};
+	};
 }
