@@ -12,7 +12,7 @@ int NUM_OF_FIELDS; // Количество искомых полей
 
 namespace AlternachGUI {
 
-	
+
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -561,19 +561,18 @@ namespace AlternachGUI {
 
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
 		this->label4->Visible = false;
+		this->numericUpDown3->Minimum = 0;
+		this->numericUpDown3->Value = 0;
+		this->numericUpDown3->Maximum = 0;
 		FreeFIELDS(this->dataGridView1->RowCount);
 		int** field = GetInputField();
 		FindAllFields(field, this->dataGridView1->RowCount, this->dataGridView1->ColumnCount);
 		FreeField(field, this->dataGridView1->RowCount);
 		if (NUM_OF_FIELDS) {
+			this->numericUpDown3->Maximum = NUM_OF_FIELDS;
 			this->numericUpDown3->Minimum = 1;
 			this->numericUpDown3->Value = 1;
 		}
-		else {
-			this->numericUpDown3->Minimum = 0;
-			this->numericUpDown3->Value = 0;
-		}
-		this->numericUpDown3->Maximum = NUM_OF_FIELDS;
 		this->label4->Text = "of " + System::Convert::ToString(NUM_OF_FIELDS);
 		this->label4->Visible = true;
 	}
@@ -584,6 +583,8 @@ namespace AlternachGUI {
 			SetGrid(this->dataGridView2, reformField, this->dataGridView1->RowCount + 2, this->dataGridView1->ColumnCount + 2);
 			FreeField(reformField, this->dataGridView1->RowCount);
 		}
+		else
+			dataGridView2->Rows->Clear();
 	}
 
 	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
