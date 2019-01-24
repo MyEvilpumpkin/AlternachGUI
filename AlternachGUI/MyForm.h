@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "ReverseGoL.h"
+#include "SBE.h"
 #include "MyForm1.h"
 
 Cell* PATTERNS0; // Паттерны не создающие жизнь в центе
@@ -9,8 +10,6 @@ Cell* PATTERNS1; // Паттерны создающие жизнь в центре
 int NUM_OF_PATTERNS1; // Количество паттернов, создающих жизнь в центре
 int*** FIELDS; // Искомые поля
 int NUM_OF_FIELDS; // Количество искомых полей
-
-enum formula { DNF, CNF, CNF3 };
 
 namespace AlternachGUI {
 
@@ -340,160 +339,13 @@ namespace AlternachGUI {
 		return field;
 	}
 
-	array<array<String^>^>^ DNF0;
-	array<array<String^>^>^ DNF1;
-	array<array<String^>^>^ CNF0;
-	array<array<String^>^>^ CNF1;
-
-	private: void CreateDNFandCNF() {
-		DNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
-		CNF1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS0);
-		for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
-			DNF0[i] = gcnew array<String^>(9);
-			CNF1[i] = gcnew array<String^>(9);
-			for (int j = 1; j <= 9; j++) {
-				if (MatchCheck(j, PATTERNS0[i].pattern)) {
-					DNF0[i][j - 1] = "x";
-					CNF1[i][j - 1] = "¬x";
-				}
-				else {
-					DNF0[i][j - 1] = "¬x";
-					CNF1[i][j - 1] = "x";
-				}
-					
-			}
-		}
-		DNF1 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
-		CNF0 = gcnew array<array<String^>^>(NUM_OF_PATTERNS1);
-		for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
-			DNF1[i] = gcnew array<String^>(9);
-			CNF0[i] = gcnew array<String^>(9);
-			for (int j = 1; j <= 9; j++) {
-				if (MatchCheck(j, PATTERNS1[i].pattern)) {
-					DNF1[i][j - 1] = "x";
-					CNF0[i][j - 1] = "¬x";
-				}
-				else {
-					DNF1[i][j - 1] = "¬x";
-					CNF0[i][j - 1] = "x";
-				}
-			}
-		}
-	}
-
-	private: void DeleteDNFandCNF() {
-		for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
-			delete[] DNF0[i];
-			delete[] CNF1[i];
-		}
-		delete[] DNF0;
-		delete[] CNF1;
-		for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
-			delete[] DNF1[i];
-			delete[] CNF0[i];
-		}
-		delete[] DNF1;
-		delete[] CNF0;
-	}
-
-	private: void CreateHTML(formula option) {
-		int** field = GetInputField();
-		int Ycounter = 1;
-		StreamWriter^ sw = gcnew StreamWriter("SBE.html");
-		sw->Write("<html><meta charset=\"utf-8\"><h1>System of Boolean Equations</h1><br><p style = \"word-wrap: break-word\"><em>");
-		int maxM = this->dataGridView1->RowCount;
-		int maxN = this->dataGridView1->ColumnCount;
-		for (int m = 0; m < maxM; m++) {
-			for (int n = 0; n < maxN; n++) {
-				int nums[9] = { m*(maxN + 2) + n + 1, m*(maxN + 2) + n + 2, m*(maxN + 2) + n + 3, m*(maxN + 2) + n + 1 + (maxN + 2), m*(maxN + 2) + n + 2 + (maxN + 2), m*(maxN + 2) + n + 3 + (maxN + 2), m*(maxN + 2) + n + 1 + (maxN + 2) * 2, m*(maxN + 2) + n + 2 + (maxN + 2) * 2, m*(maxN + 2) + n + 3 + (maxN + 2) * 2 };
-				if (field[m][n] + 2)
-					if (option == DNF) {
-						for (int i = 0; i < NUM_OF_PATTERNS1; i++) {
-							sw->Write("(");
-							for (int j = 0; j < 9; j++)
-								sw->Write(DNF1[i][j] + "<sub>" + nums[j] + "</sub>");
-							sw->Write(")");
-							if (i != NUM_OF_PATTERNS1 - 1)
-								sw->Write("V");
-						}
-					}
-					else {
-						for (int i = 0; i < NUM_OF_PATTERNS0; i++)
-							if (option == CNF) {
-								sw->Write("(");
-								for (int j = 0; j < 9; j++) {
-									sw->Write(CNF1[i][j] + "<sub>" + nums[j] + "</sub>");
-									if (j != 8)
-										sw->Write("V");
-								}
-								sw->Write(")");
-							}
-							else {
-								for (int j = 1; j < 8; j++) {
-									if (j == 1)
-										sw->Write("(" + CNF1[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-									if (j > 1 && j <= 6)
-										sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-									if (j == 7)
-										sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF1[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF1[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
-									if (j <= 6)
-										Ycounter++;
-								}
-							}
-					}
-				else
-					if (option == DNF) {
-						for (int i = 0; i < NUM_OF_PATTERNS0; i++) {
-							sw->Write("(");
-							for (int j = 0; j < 9; j++)
-								sw->Write(DNF0[i][j] + "<sub>" + nums[j] + "</sub>");
-							sw->Write(")");
-							if (i != NUM_OF_PATTERNS0 - 1)
-								sw->Write("V");
-						}
-					}
-					else {
-						for (int i = 0; i < NUM_OF_PATTERNS1; i++)
-							if (option == CNF) {
-								sw->Write("(");
-								for (int j = 0; j < 9; j++) {
-									sw->Write(CNF0[i][j] + "<sub>" + nums[j] + "</sub>");
-									if (j != 8)
-										sw->Write("V");
-								}
-								sw->Write(")");
-							}
-							else {
-								for (int j = 1; j < 8; j++) {
-									if (j == 1)
-										sw->Write("(" + CNF0[i][j - 1] + "<sub>" + nums[j - 1] + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-									if (j > 1 && j <= 6)
-										sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>Vy" + "<sub>" + Ycounter + "</sub>)");
-									if (j == 7)
-										sw->Write("(¬y<sub>" + (Ycounter - 1) + "</sub>V" + CNF0[i][j] + "<sub>" + nums[j] + "</sub>V" + CNF0[i][j + 1] + "<sub>" + nums[j + 1] + "</sub>)");
-									if (j <= 6)
-										Ycounter++;
-								}
-							}
-					}
-			}
-		}
-		sw->Write("</em></p></html>");
-		sw->Close();
-		FreeField(field, this->dataGridView1->RowCount);
-	}
-
-	private: void DeleteHTML() {
-		String^ path = Directory::GetCurrentDirectory() + "\\SBE.html";
-		if (File::Exists(path))
-			File::Delete(path);
-	}
+	SBE^ sbe;
 
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		ResizeGrid(3, 3);
 		FindAllPatterns();
-		CreateDNFandCNF();
-		DeleteHTML();
+		sbe = gcnew SBE();
+		sbe->DeleteHTML();
 		NUM_OF_FIELDS = 0;
 		FIELDS = nullptr;
 	}
@@ -505,7 +357,6 @@ namespace AlternachGUI {
 
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
 		FreeFIELDS(this->dataGridView1->RowCount);
-		this->dataGridView2->Rows->Clear();
 		this->numericUpDown3->Minimum = 0;
 		this->numericUpDown3->Value = 0;
 		this->numericUpDown3->Maximum = 0;
@@ -542,20 +393,24 @@ namespace AlternachGUI {
 	}
 
 	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-		DeleteHTML();
+		sbe->DeleteHTML();
 		FreeFIELDS(this->dataGridView1->RowCount);
-		DeleteDNFandCNF();
+		delete(sbe);
 		FreePatterns();
 	}
 
 	private: System::Void listBox1_MouseDoubleClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-		DeleteHTML();
+		sbe->DeleteHTML();
+		int** field = GetInputField();
+		int m = this->dataGridView1->RowCount;
+		int n = this->dataGridView1->ColumnCount;
 		if (this->listBox1->SelectedItem == "View DNF")
-			CreateHTML(DNF);
+			sbe->CreateHTML(DNF,field, m, n);
 		else if (this->listBox1->SelectedItem == "View CNF")
-			CreateHTML(CNF);
+			sbe->CreateHTML(CNF, field, m, n);
 		else
-			CreateHTML(CNF3);
+			sbe->CreateHTML(CNF3, field, m, n);
+		FreeField(field, m);
 		MyForm1^ f1 = gcnew MyForm1();
 		f1->Show();
 		this->listBox1->ClearSelected();
